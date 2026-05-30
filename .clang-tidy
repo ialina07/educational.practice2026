@@ -1,0 +1,20 @@
+Checks: >
+  *,
+  -readability-identifier-length,
+  -readability-magic-numbers,
+  -readability-braces-around-statements,
+  -readability-else-after-return,
+  -readability-isolate-declaration,
+  -altera-*,
+  -fuchsia-*,
+  -google-*,
+  -llvm-*,
+  -android-*,
+  -cert-*,
+  -concurrency-*,
+  -portability-*,
+  -hicpp-braces-around-statements
+
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*'
+FormatStyle: none
