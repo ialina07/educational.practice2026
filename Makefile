@@ -1,6 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -O2 -g
 SRC_DIR = src
+TEST_DIR = tests
 OBJ_DIR = obj
 BIN_DIR = bin
 
@@ -31,4 +32,18 @@ clean:
 run: $(TARGET)
 	./$(TARGET)
 
-.PHONY: clean run format tidy
+# Тесты
+testBitIo: $(OBJ_DIR)/bitIo.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testBitIo.c $(OBJ_DIR)/bitIo.o -o $(BIN_DIR)/testBitIo
+	$(BIN_DIR)/testBitIo
+
+testPq: $(OBJ_DIR)/priorityQueue.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testPq.c $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testPq
+	$(BIN_DIR)/testPq
+
+testAll: testBitIo testPq
+	@echo "All tests passed!"
+
+.PHONY: clean run format tidy testBitIo testPq testAll
