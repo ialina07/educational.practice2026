@@ -53,3 +53,18 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# temporary test files
+*.bin
+*.tmp
+test.bin
+tests/*.bin
+
+# build folders
+bin/
+obj/
+
+# IDE
+.vscode/
+.idea/
+*.swp
