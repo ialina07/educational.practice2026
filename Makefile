@@ -43,7 +43,22 @@ testPq: $(OBJ_DIR)/priorityQueue.o
 	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testPq.c $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testPq
 	$(BIN_DIR)/testPq
 
-testAll: testBitIo testPq
+testTree: $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testTree.c $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testTree
+	$(BIN_DIR)/testTree
+
+testAll: testBitIo testPq testTree
 	@echo "All tests passed!"
+	
+# Проверка на утечки памяти
+valgrindTree: testTree
+	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/testTree
+
+valgrindPq: testPq
+	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/testPq
+
+valgrindBitIo: testBitIo
+	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/testBitIo
 
 .PHONY: clean run format tidy testBitIo testPq testAll
