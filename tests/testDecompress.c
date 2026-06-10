@@ -1,14 +1,15 @@
+#include "../src/compress.h"
+#include "../src/decompress.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../src/compress.h"
-#include "../src/decompress.h"
 
 // Вспомогательная функция для создания файла
 static int createTestFile(const char* path, const char* content, size_t size)
 {
     FILE* f = fopen(path, "wb");
-    if (!f) return -1;
+    if (!f)
+        return -1;
     size_t written = fwrite(content, 1, size, f);
     fclose(f);
     return (written == size) ? 0 : -1;
@@ -20,11 +21,13 @@ static int filesAreEqual(const char* path1, const char* path2)
     FILE* f1 = fopen(path1, "rb");
     FILE* f2 = fopen(path2, "rb");
     if (!f1 || !f2) {
-        if (f1) fclose(f1);
-        if (f2) fclose(f2);
+        if (f1)
+            fclose(f1);
+        if (f2)
+            fclose(f2);
         return 0;
     }
-    
+
     int c1, c2;
     do {
         c1 = fgetc(f1);
@@ -35,7 +38,7 @@ static int filesAreEqual(const char* path1, const char* path2)
             return 0;
         }
     } while (c1 != EOF && c2 != EOF);
-    
+
     fclose(f1);
     fclose(f2);
     return (c1 == EOF && c2 == EOF);
@@ -44,7 +47,7 @@ static int filesAreEqual(const char* path1, const char* path2)
 int main()
 {
     printf("\nTesting Decompression\n\n");
-    
+
     // Тест 1: пустой файл
     printf("Test 1: Empty file\n");
     createTestFile("test_empty.txt", "", 0);
@@ -59,7 +62,7 @@ int main()
         return 1;
     }
     printf("PASS: empty file round-trip works\n\n");
-    
+
     // Тест 2: один символ
     printf("Test 2: Single character\n");
     createTestFile("test_single.txt", "A", 1);
@@ -74,7 +77,7 @@ int main()
         return 1;
     }
     printf("PASS: single character round-trip works\n\n");
-    
+
     // Тест 3: текст "abracadabra"
     printf("Test 3: String 'abracadabra'\n");
     const char* text = "abracadabra";
@@ -91,7 +94,7 @@ int main()
         return 1;
     }
     printf("PASS: 'abracadabra' round-trip works\n\n");
-    
+
     // Тест 4: русский текст
     printf("Test 4: Russian text (UTF-8)\n");
     const char* russianText = "Привет мир! Это тестовый файл для сжатия Хаффманом.";
@@ -108,7 +111,7 @@ int main()
         return 1;
     }
     printf("PASS: Russian text round-trip works\n\n");
-    
+
     // Тест 5: повторяющиеся символы
     printf("Test 5: Repeated characters\n");
     char repeated[10000];
@@ -127,7 +130,7 @@ int main()
         return 1;
     }
     printf("PASS: repeated characters round-trip works\n\n");
-    
+
     // Тест 6: проверка обработки ошибок (неверный формат)
     printf("Test 6: Invalid file format\n");
     createTestFile("test_invalid.txt", "not a huffman file", 20);
@@ -137,7 +140,7 @@ int main()
         return 1;
     }
     printf("PASS: error handling works\n\n");
-    
+
     printf("ALL DECOMPRESSION TESTS PASSED\n");
     return 0;
 }

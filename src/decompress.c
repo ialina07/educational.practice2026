@@ -19,12 +19,12 @@ int decompressFile(const char* inputPath, const char* outputPath)
     if (!input) {
         return -1;
     }
-    
+
     // Проверяем размер файла
     fseek(input, 0, SEEK_END);
     long fileSize = ftell(input);
     rewind(input);
-    
+
     // Пустой файл
     if (fileSize == 0) {
         fclose(input);
@@ -34,7 +34,7 @@ int decompressFile(const char* inputPath, const char* outputPath)
         }
         return 0;
     }
-    
+
     // Читаем заголовок
     CompressHeader header;
     size_t read = fread(&header, sizeof(header), 1, input);
@@ -42,17 +42,17 @@ int decompressFile(const char* inputPath, const char* outputPath)
         fclose(input);
         return -1;
     }
-    
+
     if (header.magic != MAGIC_NUMBER) {
         fclose(input);
         return -1;
     }
-    
+
     if (header.version != 1) {
         fclose(input);
         return -1;
     }
-    
+
     if (header.originalSize == 0) {
         fclose(input);
         FILE* output = fopen(outputPath, "wb");
@@ -61,31 +61,31 @@ int decompressFile(const char* inputPath, const char* outputPath)
         }
         return 0;
     }
-    
+
     // Восстанавливаем частоты
     int frequencies[256];
     for (int i = 0; i < 256; i++) {
         frequencies[i] = header.frequencies[i];
     }
-    
+
     Node* root = buildHuffmanTree(frequencies);
     if (!root) {
         fclose(input);
         return -1;
     }
-    
+
     FILE* output = fopen(outputPath, "wb");
     if (!output) {
         freeHuffmanTree(root);
         fclose(input);
         return -1;
     }
-    
+
     BitReader br;
     bitReaderInit(&br, input);
-    
+
     uint64_t bytesWritten = 0;
-    
+
     // Случай одного символа (дерево состоит из одного узла)
     if (!root->left && !root->right) {
         for (uint64_t i = 0; i < header.originalSize; i++) {
@@ -113,10 +113,10 @@ int decompressFile(const char* inputPath, const char* outputPath)
             bytesWritten++;
         }
     }
-    
+
     freeHuffmanTree(root);
     fclose(input);
     fclose(output);
-    
+
     return 0;
 }
