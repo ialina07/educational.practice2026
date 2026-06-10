@@ -1,8 +1,8 @@
+#include "../src/compress.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "../src/compress.h"
 
 // Вспомогательная функция для создания файла с заданным содержимым
 static int createTestFile(const char* path, const char* content, size_t size)
@@ -32,7 +32,7 @@ static long getFileSize(const char* path)
 int main()
 {
     printf("\nTesting Compression\n\n");
-    
+
     // Тест 1: пустой файл
     printf("Test 1: Empty file\n");
     createTestFile("test_empty.txt", "", 0);
@@ -47,7 +47,7 @@ int main()
         return 1;
     }
     printf("PASS: empty file compression works\n\n");
-    
+
     // Тест 2: один символ
     printf("Test 2: Single character\n");
     createTestFile("test_single.txt", "A", 1);
@@ -64,7 +64,7 @@ int main()
     }
     printf("  Original: 1 byte, Compressed: %ld bytes (header overhead expected)\n", compressedSize);
     printf("PASS: single character compression works\n\n");
-    
+
     // Тест 3: текст "abracadabra"
     printf("Test 3: String 'abracadabra'\n");
     const char* text = "abracadabra";
@@ -83,7 +83,7 @@ int main()
         printf("PASS: file compressed\n");
     }
     printf("\n");
-    
+
     // Тест 4: русский текст
     printf("Test 4: Russian text (UTF-8)\n");
     const char* russianText = "Привет мир! Это тестовый файл для сжатия Хаффманом.";
@@ -102,7 +102,7 @@ int main()
         printf("PASS: file compressed\n");
     }
     printf("\n");
-    
+
     // Тест 5: повторяющиеся символы (хорошо сжимается)
     printf("Test 5: Repeated characters\n");
     char repeated[10000];
@@ -119,14 +119,14 @@ int main()
     printf("  Original: 10000 bytes, Compressed: %ld bytes\n", compressedSize);
 
     if (compressedSize < 10000) {
-        printf("PASS: repeated characters compressed to %ld bytes (%.1f%% of original)\n", 
-           compressedSize, (float)compressedSize / 10000 * 100);
+        printf("PASS: repeated characters compressed to %ld bytes (%.1f%% of original)\n",
+            compressedSize, (float)compressedSize / 10000 * 100);
     } else {
         printf("FAIL: expected compression but got %ld bytes\n", compressedSize);
         return 1;
     }
     printf("\n");
-    
+
     // Тест 6: случайные данные (плохо сжимается)
     printf("Test 6: Random data\n");
     unsigned char randomData[1000];
@@ -142,7 +142,7 @@ int main()
     compressedSize = getFileSize("test_random.huff");
     printf("  Original: 1000 bytes, Compressed: %ld bytes\n", compressedSize);
     printf("PASS: random data test completed\n\n");
-    
+
     // Тест 7: проверка создания файла
     printf("Test 7: Output file created\n");
     FILE* check = fopen("test_abra.huff", "rb");
@@ -152,7 +152,7 @@ int main()
     }
     fclose(check);
     printf("PASS: output file exists\n\n");
-    
+
     // Тест 8: несуществующий входной файл
     printf("Test 8: Non-existent input file\n");
     result = compressFile("nonexistent.txt", "output.huff");
@@ -161,7 +161,7 @@ int main()
         return 1;
     }
     printf("PASS: error handling works\n\n");
-    
+
     // Тест 9: большой файл (10KB повторяющихся символов)
     printf("Test 9: Larger file\n");
     char largeData[10240];
@@ -169,24 +169,24 @@ int main()
         largeData[i] = (i % 2 == 0) ? 'A' : 'B';
     }
     createTestFile("test_large.txt", largeData, 10240);
-    
-    // Приблизительный замер времени 
+
+    // Приблизительный замер времени
     clock_t start = clock();
     result = compressFile("test_large.txt", "test_large.huff");
     clock_t end = clock();
     double timeMs = ((double)(end - start) * 1000.0) / CLOCKS_PER_SEC;
-    
+
     if (result != 0) {
         printf("FAIL: compressFile returned %d\n", result);
         return 1;
     }
     compressedSize = getFileSize("test_large.huff");
-    printf("  Original: 10240 bytes, Compressed: %ld bytes (%.1f%%)\n", 
-           compressedSize, (float)compressedSize / 10240 * 100);
+    printf("  Original: 10240 bytes, Compressed: %ld bytes (%.1f%%)\n",
+        compressedSize, (float)compressedSize / 10240 * 100);
     printf("  Time: %.2f ms\n", timeMs);
     printf("PASS: larger file compression works\n\n");
-    
+
     printf("ALL TESTS PASSED\n");
-    
+
     return 0;
 }

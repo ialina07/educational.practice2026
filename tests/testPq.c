@@ -1,6 +1,6 @@
+#include "../src/priorityQueue.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "../src/priorityQueue.h"
 
 // Вспомогательная функция для создания узла
 static Node* createTestNode(unsigned char symbol, int freq)
@@ -100,7 +100,7 @@ int main()
 
     // Тест 6: извлечение в правильном порядке (от меньшей частоты к большей)
     printf("Test 6: Pop order (min to max)\n");
-    int expected[] = {1, 2, 3, 5, 8};
+    int expected[] = { 1, 2, 3, 5, 8 };
     for (int i = 0; i < 5; i++) {
         Node* min = pqPopMin(pq);
         if (!min) {
@@ -109,11 +109,11 @@ int main()
         }
         if (min->freq != expected[i]) {
             printf("FAIL: step %d: expected freq=%d, got %d\n",
-                   i, expected[i], min->freq);
+                i, expected[i], min->freq);
             return 1;
         }
         printf("  Pop %d: freq=%d (symbol=%c)\n",
-               i+1, min->freq, min->symbol);
+            i + 1, min->freq, min->symbol);
         freeTestNode(min);
     }
     printf("PASS: correct pop order\n\n");
@@ -145,7 +145,7 @@ int main()
         return 1;
     }
     freeTestNode(minBig);
-    
+
     while (pqSize(pqBig) > 0) {
         freeTestNode(pqPopMin(pqBig));
     }

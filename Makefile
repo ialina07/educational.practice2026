@@ -10,7 +10,7 @@ OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 TARGET = $(BIN_DIR)/huffman
 
 # Файлы для форматирования
-FORMAT_FILES = $(wildcard $(SRC_DIR)/*.c $(SRC_DIR)/*.h)
+FORMAT_FILES = $(shell find $(SRC_DIR) $(TEST_DIR) -name '*.c' -o -name '*.h')
 
 format:
 	clang-format -i $(FORMAT_FILES)
