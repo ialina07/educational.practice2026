@@ -12,11 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install clang-format
-        run: sudo apt-get update && sudo apt-get install -y clang-format-14
+        run: sudo apt-get update && sudo apt-get install -y clang-format-18
       - name: Check formatting
         run: |
           find src/ tests/ -name '*.c' -o -name '*.h' | \
-          xargs clang-format-14 --dry-run --Werror
+          xargs clang-format-18 --dry-run --Werror
 
   tidy:
     runs-on: ubuntu-latest
