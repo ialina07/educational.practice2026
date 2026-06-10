@@ -32,6 +32,9 @@ clean:
 run: $(TARGET)
 	./$(TARGET)
 
+check-format:
+	clang-format --dry-run --Werror $(FORMAT_FILES)
+
 # Тесты
 testBitIo: $(OBJ_DIR)/bitIo.o
 	mkdir -p $(BIN_DIR)
