@@ -157,6 +157,6 @@ int main()
     pqFree(pq);
     printf("PASS: queue freed\n\n");
 
-    printf("ALL TESTS PASSED\n");
+    printf("ALL PQ TESTS PASSED\n");
     return 0;
 }

@@ -193,6 +193,6 @@ int main()
     freeHuffmanTree(rootSmall);
     printf("PASS: tree freed\n\n");
 
-    printf("ALL TESTS PASSED\n");
+    printf("ALL HUFFMAN TREE TESTS PASSED\n");
     return 0;
 }

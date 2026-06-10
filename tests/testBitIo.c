@@ -43,6 +43,6 @@ int main()
         printf("PASS: byte2 = F0\n");
     }
 
-    printf("All bitIo tests passed!\n");
+    printf("ALL BITIO TESTS PASSED\n");
     return 0;
 }

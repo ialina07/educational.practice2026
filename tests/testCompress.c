@@ -186,7 +186,7 @@ int main()
     printf("  Time: %.2f ms\n", timeMs);
     printf("PASS: larger file compression works\n\n");
 
-    printf("ALL TESTS PASSED\n");
+    printf("ALL COMPRESSION TESTS PASSED\n");
 
     return 0;
 }

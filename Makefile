@@ -56,7 +56,16 @@ testCompress: $(OBJ_DIR)/compress.o $(OBJ_DIR)/bitIo.o $(OBJ_DIR)/huffmanTree.o 
 	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testCompress.c $(OBJ_DIR)/compress.o $(OBJ_DIR)/bitIo.o $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testCompress
 	$(BIN_DIR)/testCompress
 
-testAll: testBitIo testPq testTree testCompress
+$(OBJ_DIR)/decompress.o: $(SRC_DIR)/decompress.c $(SRC_DIR)/decompress.h
+	mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+testDecompress: $(OBJ_DIR)/decompress.o $(OBJ_DIR)/compress.o $(OBJ_DIR)/bitIo.o $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testDecompress.c $(OBJ_DIR)/decompress.o $(OBJ_DIR)/compress.o $(OBJ_DIR)/bitIo.o $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testDecompress
+	$(BIN_DIR)/testDecompress
+
+testAll: testBitIo testPq testTree testCompress testDecompress
 	@echo "All tests passed!"
 	
 # Проверка на утечки памяти
