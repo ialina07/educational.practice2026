@@ -65,7 +65,7 @@ void freeHuffmanTree(Node* root)
 }
 
 static void generateCodesRecursive(Node* node, uint32_t code, int length,
-                                   uint32_t codes[256], int lengths[256])
+    uint32_t codes[256], int lengths[256])
 {
     if (!node) {
         return;

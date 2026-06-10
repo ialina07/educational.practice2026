@@ -1,19 +1,19 @@
 #pragma once
 
-#include <stddef.h>
 #include "huffmanTree.h"
+#include <stddef.h>
 
 // Очередь с приоритетами на основе минимальной кучи (min-heap)
 typedef struct {
 
     // массив указателей на узлы
-    Node** arr; 
-    
+    Node** arr;
+
     // текущее количество элементов
-    int size;        
+    int size;
 
     // вместимость выделенного массива
-    int capacity;    
+    int capacity;
 } PriorityQueue;
 
 // Создаёт новую пустую очередь

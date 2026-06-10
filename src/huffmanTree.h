@@ -1,22 +1,22 @@
 #pragma once
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 // Узел дерева Хаффмана
 typedef struct Node {
 
     // символ (0-255)
-    unsigned char symbol;  
-    
+    unsigned char symbol;
+
     // частота встречаемости
-    int freq;   
-    
+    int freq;
+
     // левый потомок
-    struct Node* left;    
-    
+    struct Node* left;
+
     // правый потомок
-    struct Node* right;      
+    struct Node* right;
 } Node;
 
 // Строит дерево Хаффмана по массиву частот (256 элементов)
