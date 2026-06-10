@@ -68,3 +68,7 @@ obj/
 .vscode/
 .idea/
 *.swp
+
+# Test files (generated during tests)
+test_*.huff
+test_*.txt

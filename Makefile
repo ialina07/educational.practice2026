@@ -48,7 +48,12 @@ testTree: $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o
 	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testTree.c $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testTree
 	$(BIN_DIR)/testTree
 
-testAll: testBitIo testPq testTree
+testCompress: $(OBJ_DIR)/compress.o $(OBJ_DIR)/bitIo.o $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testCompress.c $(OBJ_DIR)/compress.o $(OBJ_DIR)/bitIo.o $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testCompress
+	$(BIN_DIR)/testCompress
+
+testAll: testBitIo testPq testTree testCompress
 	@echo "All tests passed!"
 	
 # Проверка на утечки памяти
