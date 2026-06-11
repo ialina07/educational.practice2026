@@ -1,17 +1,20 @@
 #include "decompress.h"
 #include "bitIo.h"
+#include "huffman.h"
 #include "huffmanTree.h"
 #include <stdlib.h>
 #include <string.h>
 
-#define MAGIC_NUMBER 0x4846
-
-typedef struct {
-    uint16_t magic;
-    uint8_t version;
-    uint64_t originalSize;
-    uint32_t frequencies[256];
-} __attribute__((packed)) CompressHeader;
+static int validateHeader(HuffmanHeader* header)
+{
+    if (header->magic != MAGIC_NUMBER) {
+        return -1;
+    }
+    if (header->version != HUFFMAN_VERSION) {
+        return -1;
+    }
+    return 0;
+}
 
 int decompressFile(const char* inputPath, const char* outputPath)
 {
@@ -20,12 +23,10 @@ int decompressFile(const char* inputPath, const char* outputPath)
         return -1;
     }
 
-    // Проверяем размер файла
     fseek(input, 0, SEEK_END);
     long fileSize = ftell(input);
     rewind(input);
 
-    // Пустой файл
     if (fileSize == 0) {
         fclose(input);
         FILE* output = fopen(outputPath, "wb");
@@ -35,20 +36,14 @@ int decompressFile(const char* inputPath, const char* outputPath)
         return 0;
     }
 
-    // Читаем заголовок
-    CompressHeader header;
+    HuffmanHeader header;
     size_t read = fread(&header, sizeof(header), 1, input);
     if (read != 1) {
         fclose(input);
         return -1;
     }
 
-    if (header.magic != MAGIC_NUMBER) {
-        fclose(input);
-        return -1;
-    }
-
-    if (header.version != 1) {
+    if (validateHeader(&header) != 0) {
         fclose(input);
         return -1;
     }
@@ -62,7 +57,6 @@ int decompressFile(const char* inputPath, const char* outputPath)
         return 0;
     }
 
-    // Восстанавливаем частоты
     int frequencies[256];
     for (int i = 0; i < 256; i++) {
         frequencies[i] = header.frequencies[i];
