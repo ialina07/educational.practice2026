@@ -72,3 +72,6 @@ obj/
 # Test files (generated during tests)
 test_*.huff
 test_*.txt
+
+*.huff
+*.txt

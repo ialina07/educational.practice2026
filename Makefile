@@ -10,7 +10,7 @@ OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 TARGET = $(BIN_DIR)/huffman
 
 # Файлы для форматирования
-FORMAT_FILES = $(wildcard $(SRC_DIR)/*.c $(SRC_DIR)/*.h)
+FORMAT_FILES = $(shell find $(SRC_DIR) $(TEST_DIR) -name '*.c' -o -name '*.h')
 
 format:
 	clang-format -i $(FORMAT_FILES)
@@ -40,13 +40,42 @@ testBitIo: $(OBJ_DIR)/bitIo.o
 	mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testBitIo.c $(OBJ_DIR)/bitIo.o -o $(BIN_DIR)/testBitIo
 	$(BIN_DIR)/testBitIo
-
-testPq: $(OBJ_DIR)/priorityQueue.o
+	
+testPq: $(OBJ_DIR)/priorityQueue.o $(OBJ_DIR)/huffmanTree.o
 	mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testPq.c $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testPq
+	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testPq.c $(OBJ_DIR)/priorityQueue.o $(OBJ_DIR)/huffmanTree.o -o $(BIN_DIR)/testPq
 	$(BIN_DIR)/testPq
 
-testAll: testBitIo testPq
+testTree: $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testTree.c $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testTree
+	$(BIN_DIR)/testTree
+
+testCompress: $(OBJ_DIR)/compress.o $(OBJ_DIR)/bitIo.o $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testCompress.c $(OBJ_DIR)/compress.o $(OBJ_DIR)/bitIo.o $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testCompress
+	$(BIN_DIR)/testCompress
+
+$(OBJ_DIR)/decompress.o: $(SRC_DIR)/decompress.c $(SRC_DIR)/decompress.h
+	mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+testDecompress: $(OBJ_DIR)/decompress.o $(OBJ_DIR)/compress.o $(OBJ_DIR)/bitIo.o $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testDecompress.c $(OBJ_DIR)/decompress.o $(OBJ_DIR)/compress.o $(OBJ_DIR)/bitIo.o $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testDecompress
+	$(BIN_DIR)/testDecompress
+
+testAll: testBitIo testPq testTree testCompress testDecompress
 	@echo "All tests passed!"
+	
+# Проверка на утечки памяти
+valgrindTree: testTree
+	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/testTree
+
+valgrindPq: testPq
+	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/testPq
+
+valgrindBitIo: testBitIo
+	valgrind --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/testBitIo
 
 .PHONY: clean run format tidy testBitIo testPq testAll
