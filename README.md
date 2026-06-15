@@ -27,7 +27,7 @@ compress - сжатие файла
 decompress - распаковка файла
 
 ## Сборка
-make
+make bin/huffman
 
 ## Сжатие
 ./bin/huffman -c input.txt output.huff
