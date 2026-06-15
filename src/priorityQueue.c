@@ -1,20 +1,21 @@
 #include "priorityQueue.h"
+#include "huffmanTree.h"
 #include <stdlib.h>
 
-PriorityQueue* pqCreate(void)
+PriorityQueue* priorityQueueCreate(void)
 {
-    PriorityQueue* pq = (PriorityQueue*)malloc(sizeof(PriorityQueue));
-    if (!pq) {
+    PriorityQueue* priorityQueue = (PriorityQueue*)malloc(sizeof(PriorityQueue));
+    if (!priorityQueue) {
         return NULL;
     }
-    pq->capacity = 256;
-    pq->size = 0;
-    pq->arr = (Node**)malloc(sizeof(Node*) * pq->capacity);
-    if (!pq->arr) {
-        free(pq);
+    priorityQueue->capacity = 256;
+    priorityQueue->size = 0;
+    priorityQueue->arr = (Node**)malloc(sizeof(Node*) * priorityQueue->capacity);
+    if (!priorityQueue->arr) {
+        free(priorityQueue);
         return NULL;
     }
-    return pq;
+    return priorityQueue;
 }
 
 static void swap(Node** a, Node** b)
@@ -24,88 +25,88 @@ static void swap(Node** a, Node** b)
     *b = tmp;
 }
 
-static void heapUp(PriorityQueue* pq, int index)
+static void heapUp(PriorityQueue* priorityQueue, int index)
 {
     while (index > 0) {
         int parent = (index - 1) / 2;
-        if (pq->arr[parent]->freq <= pq->arr[index]->freq) {
+        if (getFrequency(priorityQueue->arr[parent]) <= getFrequency(priorityQueue->arr[index])) {
             break;
         }
-        swap(&pq->arr[parent], &pq->arr[index]);
+        swap(&priorityQueue->arr[parent], &priorityQueue->arr[index]);
         index = parent;
     }
 }
 
-static void heapDown(PriorityQueue* pq, int index)
+static void heapDown(PriorityQueue* priorityQueue, int index)
 {
-    int size = pq->size;
+    int size = priorityQueue->size;
     while (1) {
         int left = 2 * index + 1;
         int right = 2 * index + 2;
         int smallest = index;
 
-        if (left < size && pq->arr[left]->freq < pq->arr[smallest]->freq) {
+        if (left < size && getFrequency(priorityQueue->arr[left]) < getFrequency(priorityQueue->arr[smallest])) {
             smallest = left;
         }
-        if (right < size && pq->arr[right]->freq < pq->arr[smallest]->freq) {
+        if (right < size && getFrequency(priorityQueue->arr[right]) < getFrequency(priorityQueue->arr[smallest])) {
             smallest = right;
         }
         if (smallest == index) {
             break;
         }
-        swap(&pq->arr[index], &pq->arr[smallest]);
+        swap(&priorityQueue->arr[index], &priorityQueue->arr[smallest]);
         index = smallest;
     }
 }
 
-void pqPush(PriorityQueue* pq, Node* node)
+void priorityQueuePush(PriorityQueue* priorityQueue, Node* node)
 {
-    if (!pq || !node) {
+    if (!priorityQueue || !node) {
         return;
     }
 
-    if (pq->size >= pq->capacity) {
-        pq->capacity *= 2;
-        Node** newArr = (Node**)realloc(pq->arr, sizeof(Node*) * pq->capacity);
+    if (priorityQueue->size >= priorityQueue->capacity) {
+        priorityQueue->capacity *= 2;
+        Node** newArr = (Node**)realloc(priorityQueue->arr, sizeof(Node*) * priorityQueue->capacity);
         if (!newArr) {
             return;
         }
-        pq->arr = newArr;
+        priorityQueue->arr = newArr;
     }
 
-    pq->arr[pq->size] = node;
-    heapUp(pq, pq->size);
-    pq->size++;
+    priorityQueue->arr[priorityQueue->size] = node;
+    heapUp(priorityQueue, priorityQueue->size);
+    priorityQueue->size++;
 }
 
-Node* pqPopMin(PriorityQueue* pq)
+Node* priorityQueuePopMin(PriorityQueue* priorityQueue)
 {
-    if (!pq || pq->size == 0) {
+    if (!priorityQueue || priorityQueue->size == 0) {
         return NULL;
     }
 
-    Node* min = pq->arr[0];
-    pq->size--;
-    pq->arr[0] = pq->arr[pq->size];
-    heapDown(pq, 0);
+    Node* min = priorityQueue->arr[0];
+    priorityQueue->size--;
+    priorityQueue->arr[0] = priorityQueue->arr[priorityQueue->size];
+    heapDown(priorityQueue, 0);
     return min;
 }
 
-int pqSize(PriorityQueue* pq)
+int priorityQueueSize(PriorityQueue* priorityQueue)
 {
-    if (!pq) {
+    if (!priorityQueue) {
         return 0;
     }
-    return pq->size;
+    return priorityQueue->size;
 }
 
-void pqFree(PriorityQueue* pq)
+void priorityQueueFree(PriorityQueue* priorityQueue)
 {
-    if (!pq) {
+    if (!priorityQueue) {
         return;
     }
-    if (pq->arr) {
-        free(pq->arr);
+    if (priorityQueue->arr) {
+        free(priorityQueue->arr);
     }
-    free(pq);
+    free(priorityQueue);
 }

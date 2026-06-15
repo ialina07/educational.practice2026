@@ -2,22 +2,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Тестовая структура, совместимая по памяти с реальной struct Node
+struct TestNode {
+    unsigned char symbol;
+    int frequency;
+    struct TestNode* left;
+    struct TestNode* right;
+};
+
 // Вспомогательная функция для создания узла
-static Node* createTestNode(unsigned char symbol, int freq)
+static struct TestNode* createTestNode(unsigned char symbol, int freq)
 {
-    Node* node = (Node*)malloc(sizeof(Node));
+    struct TestNode* node = (struct TestNode*)malloc(sizeof(struct TestNode));
     if (!node) {
         return NULL;
     }
     node->symbol = symbol;
-    node->freq = freq;
+    node->frequency = freq;
     node->left = NULL;
     node->right = NULL;
     return node;
 }
 
 // Освобождение узлов
-static void freeTestNode(Node* node)
+static void freeTestNode(struct TestNode* node)
 {
     if (node) {
         free(node);
@@ -30,8 +38,8 @@ int main()
 
     // Тест 1: создание очереди
     printf("Test 1: Create queue\n");
-    PriorityQueue* pq = pqCreate();
-    if (!pq) {
+    PriorityQueue* priorityQueue = priorityQueueCreate();
+    if (!priorityQueue) {
         printf("FAIL: cannot create queue\n");
         return 1;
     }
@@ -39,11 +47,11 @@ int main()
 
     // Тест 2: пустая очередь
     printf("Test 2: Empty queue\n");
-    if (pqSize(pq) != 0) {
-        printf("FAIL: size should be 0, got %d\n", pqSize(pq));
+    if (priorityQueueSize(priorityQueue) != 0) {
+        printf("FAIL: size should be 0, got %d\n", priorityQueueSize(priorityQueue));
         return 1;
     }
-    Node* emptyPop = pqPopMin(pq);
+    Node* emptyPop = priorityQueuePopMin(priorityQueue);
     if (emptyPop != NULL) {
         printf("FAIL: pop from empty should return NULL\n");
         return 1;
@@ -52,48 +60,48 @@ int main()
 
     // Тест 3: добавление одного элемента
     printf("Test 3: Push one element\n");
-    Node* n1 = createTestNode('A', 10);
-    pqPush(pq, n1);
-    if (pqSize(pq) != 1) {
-        printf("FAIL: size should be 1, got %d\n", pqSize(pq));
+    struct TestNode* n1 = createTestNode('A', 10);
+    priorityQueuePush(priorityQueue, (Node*)n1);
+    if (priorityQueueSize(priorityQueue) != 1) {
+        printf("FAIL: size should be 1, got %d\n", priorityQueueSize(priorityQueue));
         return 1;
     }
     printf("PASS: size = 1\n\n");
 
     // Тест 4: извлечение одного элемента
     printf("Test 4: Pop one element\n");
-    Node* popped = pqPopMin(pq);
-    if (popped != n1) {
+    Node* popped = priorityQueuePopMin(priorityQueue);
+    if (popped != (Node*)n1) {
         printf("FAIL: popped wrong node\n");
         return 1;
     }
-    if (popped->freq != 10) {
-        printf("FAIL: wrong frequency, expected 10, got %d\n", popped->freq);
+    if (getFrequency(popped) != 10) {
+        printf("FAIL: wrong frequency, expected 10, got %d\n", getFrequency(popped));
         return 1;
     }
-    if (pqSize(pq) != 0) {
-        printf("FAIL: size should be 0 after pop, got %d\n", pqSize(pq));
+    if (priorityQueueSize(priorityQueue) != 0) {
+        printf("FAIL: size should be 0 after pop, got %d\n", priorityQueueSize(priorityQueue));
         return 1;
     }
     printf("PASS: pop works\n\n");
-    freeTestNode(popped);
+    freeTestNode(n1);
 
     // Тест 5: добавление нескольких элементов с разными частотами
     printf("Test 5: Push multiple elements\n");
-    Node* a = createTestNode('A', 5);
-    Node* b = createTestNode('B', 2);
-    Node* c = createTestNode('C', 8);
-    Node* d = createTestNode('D', 1);
-    Node* e = createTestNode('E', 3);
+    struct TestNode* a = createTestNode('A', 5);
+    struct TestNode* b = createTestNode('B', 2);
+    struct TestNode* c = createTestNode('C', 8);
+    struct TestNode* d = createTestNode('D', 1);
+    struct TestNode* e = createTestNode('E', 3);
 
-    pqPush(pq, a);
-    pqPush(pq, b);
-    pqPush(pq, c);
-    pqPush(pq, d);
-    pqPush(pq, e);
+    priorityQueuePush(priorityQueue, (Node*)a);
+    priorityQueuePush(priorityQueue, (Node*)b);
+    priorityQueuePush(priorityQueue, (Node*)c);
+    priorityQueuePush(priorityQueue, (Node*)d);
+    priorityQueuePush(priorityQueue, (Node*)e);
 
-    if (pqSize(pq) != 5) {
-        printf("FAIL: size should be 5, got %d\n", pqSize(pq));
+    if (priorityQueueSize(priorityQueue) != 5) {
+        printf("FAIL: size should be 5, got %d\n", priorityQueueSize(priorityQueue));
         return 1;
     }
     printf("PASS: size = 5\n\n");
@@ -102,59 +110,59 @@ int main()
     printf("Test 6: Pop order (min to max)\n");
     int expected[] = { 1, 2, 3, 5, 8 };
     for (int i = 0; i < 5; i++) {
-        Node* min = pqPopMin(pq);
+        Node* min = priorityQueuePopMin(priorityQueue);
         if (!min) {
             printf("FAIL: pop returned NULL at step %d\n", i);
             return 1;
         }
-        if (min->freq != expected[i]) {
+        if (getFrequency(min) != expected[i]) {
             printf("FAIL: step %d: expected freq=%d, got %d\n",
-                i, expected[i], min->freq);
+                i, expected[i], getFrequency(min));
             return 1;
         }
         printf("  Pop %d: freq=%d (symbol=%c)\n",
-            i + 1, min->freq, min->symbol);
-        freeTestNode(min);
+            i + 1, getFrequency(min), getSymbol(min));
+        freeTestNode((struct TestNode*)min);
     }
     printf("PASS: correct pop order\n\n");
 
     // Тест 7: очередь должна быть пустой
     printf("Test 7: Queue empty after all pops\n");
-    if (pqSize(pq) != 0) {
-        printf("FAIL: size should be 0, got %d\n", pqSize(pq));
+    if (priorityQueueSize(priorityQueue) != 0) {
+        printf("FAIL: size should be 0, got %d\n", priorityQueueSize(priorityQueue));
         return 1;
     }
     printf("PASS: queue empty\n\n");
 
     // Тест 8: добавление больше 256 элементов
     printf("Test 8: Dynamic expansion\n");
-    PriorityQueue* pqBig = pqCreate();
-    Node* manyNodes[300];
+    PriorityQueue* priorityQueueBig = priorityQueueCreate();
+    struct TestNode* manyNodes[300];
     for (int i = 0; i < 300; i++) {
         manyNodes[i] = createTestNode((unsigned char)(i % 256), i);
-        pqPush(pqBig, manyNodes[i]);
+        priorityQueuePush(priorityQueueBig, (Node*)manyNodes[i]);
     }
-    if (pqSize(pqBig) != 300) {
-        printf("FAIL: size should be 300, got %d\n", pqSize(pqBig));
+    if (priorityQueueSize(priorityQueueBig) != 300) {
+        printf("FAIL: size should be 300, got %d\n", priorityQueueSize(priorityQueueBig));
         return 1;
     }
     // Проверяем, что минимум на месте
-    Node* minBig = pqPopMin(pqBig);
-    if (minBig->freq != 0) {
-        printf("FAIL: min should be 0, got %d\n", minBig->freq);
+    Node* minBig = priorityQueuePopMin(priorityQueueBig);
+    if (getFrequency(minBig) != 0) {
+        printf("FAIL: min should be 0, got %d\n", getFrequency(minBig));
         return 1;
     }
-    freeTestNode(minBig);
+    freeTestNode((struct TestNode*)minBig);
 
-    while (pqSize(pqBig) > 0) {
-        freeTestNode(pqPopMin(pqBig));
+    while (priorityQueueSize(priorityQueueBig) > 0) {
+        freeTestNode((struct TestNode*)priorityQueuePopMin(priorityQueueBig));
     }
-    pqFree(pqBig);
+    priorityQueueFree(priorityQueueBig);
     printf("PASS: dynamic expansion works\n\n");
 
     // Тест 9: освобождение очереди
     printf("Test 9: Free queue\n");
-    pqFree(pq);
+    priorityQueueFree(priorityQueue);
     printf("PASS: queue freed\n\n");
 
     printf("ALL PQ TESTS PASSED\n");

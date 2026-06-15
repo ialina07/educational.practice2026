@@ -40,10 +40,10 @@ testBitIo: $(OBJ_DIR)/bitIo.o
 	mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testBitIo.c $(OBJ_DIR)/bitIo.o -o $(BIN_DIR)/testBitIo
 	$(BIN_DIR)/testBitIo
-
-testPq: $(OBJ_DIR)/priorityQueue.o
+	
+testPq: $(OBJ_DIR)/priorityQueue.o $(OBJ_DIR)/huffmanTree.o
 	mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testPq.c $(OBJ_DIR)/priorityQueue.o -o $(BIN_DIR)/testPq
+	$(CC) $(CFLAGS) -I $(SRC_DIR) $(TEST_DIR)/testPq.c $(OBJ_DIR)/priorityQueue.o $(OBJ_DIR)/huffmanTree.o -o $(BIN_DIR)/testPq
 	$(BIN_DIR)/testPq
 
 testTree: $(OBJ_DIR)/huffmanTree.o $(OBJ_DIR)/priorityQueue.o

@@ -80,16 +80,16 @@ int decompressFile(const char* inputPath, const char* outputPath)
 
     uint64_t bytesWritten = 0;
 
-    // Случай одного символа (дерево состоит из одного узла)
-    if (!root->left && !root->right) {
+    if (isLeaf(root)) {
+        unsigned char symbol = getSymbol(root);
         for (uint64_t i = 0; i < header.originalSize; i++) {
-            fputc(root->symbol, output);
+            fputc(symbol, output);
         }
         bytesWritten = header.originalSize;
     } else {
         while (bytesWritten < header.originalSize) {
             Node* current = root;
-            while (current->left || current->right) {
+            while (!isLeaf(current)) {
                 int bit = bitReaderReadBit(&br);
                 if (bit == -1) {
                     freeHuffmanTree(root);
@@ -98,12 +98,12 @@ int decompressFile(const char* inputPath, const char* outputPath)
                     return -1;
                 }
                 if (bit == 0) {
-                    current = current->left;
+                    current = getLeft(current);
                 } else {
-                    current = current->right;
+                    current = getRight(current);
                 }
             }
-            fputc(current->symbol, output);
+            fputc(getSymbol(current), output);
             bytesWritten++;
         }
     }

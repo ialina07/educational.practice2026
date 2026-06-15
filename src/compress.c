@@ -9,7 +9,7 @@ static int writeHeader(FILE* file, uint64_t originalSize, int frequencies[256])
 {
     HuffmanHeader header;
     header.magic = MAGIC_NUMBER;
-    header.version = 1;
+    header.version = HUFFMAN_VERSION;
     header.originalSize = originalSize;
 
     for (int i = 0; i < 256; i++) {
@@ -46,7 +46,6 @@ int compressFile(const char* inputPath, const char* outputPath)
 
     if (fileSize == 0) {
         fclose(input);
-        // Создаём пустой выходной файл
         FILE* output = fopen(outputPath, "wb");
         if (output) {
             fclose(output);
@@ -64,7 +63,6 @@ int compressFile(const char* inputPath, const char* outputPath)
     int lengths[256];
     generateCodes(root, codes, lengths);
 
-    // Открываем выходной файл и пишем заголовок
     FILE* output = fopen(outputPath, "wb");
     if (!output) {
         freeHuffmanTree(root);
@@ -82,8 +80,8 @@ int compressFile(const char* inputPath, const char* outputPath)
         return -1;
     }
 
-    // Кодирование данных (второй проход)
     rewind(input);
+    int c;
     while ((c = fgetc(input)) != EOF) {
         uint32_t code = codes[c];
         int len = lengths[c];

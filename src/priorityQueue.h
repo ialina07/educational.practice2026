@@ -3,9 +3,8 @@
 #include "huffmanTree.h"
 #include <stddef.h>
 
-// Очередь с приоритетами на основе минимальной кучи (min-heap)
+// Очередь с приоритетами на основе минимальной кучи
 typedef struct {
-
     // массив указателей на узлы
     Node** arr;
 
@@ -17,16 +16,16 @@ typedef struct {
 } PriorityQueue;
 
 // Создаёт новую пустую очередь
-PriorityQueue* pqCreate(void);
+PriorityQueue* priorityQueueCreate(void);
 
 // Добавляет узел в очередь
-void pqPush(PriorityQueue* pq, Node* node);
+void priorityQueuePush(PriorityQueue* priorityQueue, Node* node);
 
 // Извлекает и возвращает узел с наименьшей частотой (или NULL, если пусто)
-Node* pqPopMin(PriorityQueue* pq);
+Node* priorityQueuePopMin(PriorityQueue* priorityQueue);
 
 // Возвращает количество узлов в очереди
-int pqSize(PriorityQueue* pq);
+int priorityQueueSize(PriorityQueue* priorityQueue);
 
 // Освобождает память очереди (но не сами узлы)
-void pqFree(PriorityQueue* pq);
+void priorityQueueFree(PriorityQueue* priorityQueue);

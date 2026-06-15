@@ -1,56 +1,93 @@
 #include "huffmanTree.h"
 #include "priorityQueue.h"
+#include <stdbool.h>
 #include <stdlib.h>
+
+struct Node {
+    unsigned char symbol;
+    int frequency;
+    struct Node* left;
+    struct Node* right;
+};
+
+bool isLeaf(Node* node)
+{
+    return node != NULL && node->left == NULL && node->right == NULL;
+}
+
+unsigned char getSymbol(Node* node)
+{
+    return node->symbol;
+}
+
+int getFrequency(Node* node)
+{
+    return node->frequency;
+}
+
+Node* getLeft(Node* node)
+{
+    return node->left;
+}
+
+Node* getRight(Node* node)
+{
+    return node->right;
+}
+
+static Node* createNode(unsigned char symbol, int frequency)
+{
+    Node* node = (Node*)malloc(sizeof(Node));
+    if (!node) {
+        return NULL;
+    }
+    node->symbol = symbol;
+    node->frequency = frequency;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
 
 Node* buildHuffmanTree(int frequencies[256])
 {
-    PriorityQueue* pq = pqCreate();
-    if (!pq) {
+    PriorityQueue* priorityQueue = priorityQueueCreate();
+    if (!priorityQueue) {
         return NULL;
     }
 
-    // Создаём узел для каждого символа с ненулевой частотой
     for (int i = 0; i < 256; i++) {
         if (frequencies[i] > 0) {
-            Node* node = (Node*)malloc(sizeof(Node));
+            Node* node = createNode((unsigned char)i, frequencies[i]);
             if (!node) {
-                pqFree(pq);
+                priorityQueueFree(priorityQueue);
                 return NULL;
             }
-            node->symbol = (unsigned char)i;
-            node->freq = frequencies[i];
-            node->left = NULL;
-            node->right = NULL;
-            pqPush(pq, node);
+            priorityQueuePush(priorityQueue, node);
         }
     }
 
-    // Если нет ни одного символа с ненулевой частотой
-    if (pqSize(pq) == 0) {
-        pqFree(pq);
+    if (priorityQueueSize(priorityQueue) == 0) {
+        priorityQueueFree(priorityQueue);
         return NULL;
     }
 
-    // Сливаем узлы, пока не останется один
-    while (pqSize(pq) > 1) {
-        Node* left = pqPopMin(pq);
-        Node* right = pqPopMin(pq);
+    while (priorityQueueSize(priorityQueue) > 1) {
+        Node* left = priorityQueuePopMin(priorityQueue);
+        Node* right = priorityQueuePopMin(priorityQueue);
 
-        Node* parent = (Node*)malloc(sizeof(Node));
+        Node* parent = createNode(0, getFrequency(left) + getFrequency(right));
         if (!parent) {
-            pqFree(pq);
+            priorityQueueFree(priorityQueue);
             return NULL;
         }
-        parent->symbol = 0;
-        parent->freq = left->freq + right->freq;
         parent->left = left;
         parent->right = right;
 
-        pqPush(pq, parent);
+        priorityQueuePush(priorityQueue, parent);
     }
 
-    Node* root = pqPopMin(pq);
-    pqFree(pq);
+    Node* root = priorityQueuePopMin(priorityQueue);
+    priorityQueueFree(priorityQueue);
     return root;
 }
 
@@ -59,8 +96,8 @@ void freeHuffmanTree(Node* root)
     if (!root) {
         return;
     }
-    freeHuffmanTree(root->left);
-    freeHuffmanTree(root->right);
+    freeHuffmanTree(getLeft(root));
+    freeHuffmanTree(getRight(root));
     free(root);
 }
 
@@ -71,17 +108,14 @@ static void generateCodesRecursive(Node* node, uint32_t code, int length,
         return;
     }
 
-    // Если лист (нет потомков)
-    if (!node->left && !node->right) {
-        codes[node->symbol] = code;
-        lengths[node->symbol] = length;
+    if (isLeaf(node)) {
+        codes[getSymbol(node)] = code;
+        lengths[getSymbol(node)] = length;
         return;
     }
 
-    // Идём влево — добавляем 0
-    generateCodesRecursive(node->left, (code << 1) | 0, length + 1, codes, lengths);
-    // Идём вправо — добавляем 1
-    generateCodesRecursive(node->right, (code << 1) | 1, length + 1, codes, lengths);
+    generateCodesRecursive(getLeft(node), (code << 1) | 0, length + 1, codes, lengths);
+    generateCodesRecursive(getRight(node), (code << 1) | 1, length + 1, codes, lengths);
 }
 
 void generateCodes(Node* root, uint32_t codes[256], int lengths[256])
